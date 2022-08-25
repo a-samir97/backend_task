@@ -1,0 +1,44 @@
+version: '3.5'
+
+services:
+
+    vernemq:
+        environment:
+            - DOCKER_VERNEMQ_ACCEPT_EULA=yes
+            - DOCKER_VERNEMQ_ALLOW_ANONYMOUS=on
+            - MQTT_TOPIC=thndr-trading
+        image: erlio/docker-vernemq
+
+    streamer:
+        environment:
+            - MQTT_HOST=vernemq
+            - MQTT_PORT=1883
+            - MQTT_TOPIC=thndr-trading
+        image: thndr/streamer:0.2
+        depends_on:
+            - vernemq
+
+    backend:
+        build: .
+        command: bash -c "python manage.py migrate & python manage.py runserver 0.0.0.0:8000 & python background_task.py"
+        volumes:
+        - .:/code
+        ports:
+        - "8000:8000"
+        depends_on:
+            - vernemq
+            - redis 
+        restart: on-failure
+
+    redis:
+        image: redis/redis-stack
+        volumes:
+        - redis_data:/data
+        ports:
+        - 6379:6379
+        - 8001:8001
+        restart: unless-stopped
+
+volumes:
+    redis_data:
+        external: false
