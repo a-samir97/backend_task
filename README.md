@@ -1,5 +1,8 @@
 # Backend Task
 
+## Changes 
+- I have added two instances in docker compose `backend instance (django)` and `redis stack instance`
+
 ### How to run the project ?
 - `docker-compose up`
 
@@ -28,3 +31,7 @@
 - Django Rest Framework
 - Redis
 - Swagger Documentation 
+
+## Improvments
+- I think we can use noSQL database instead of redis `for example rethink database used for realtime database`
+- use `base script` to run the backend instance after all other instances 
